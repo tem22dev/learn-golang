@@ -1,45 +1,47 @@
 package main
 
 import (
-	"encoding/json"
-	"log"
-	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	r := gin.Default()
+	r.GET("/demo", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"message": "Hello, Trung Em"})
+	})
 
-	http.HandleFunc("/demo", demoHandler)
+	r.GET("/users/:user_id", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"data": "Danh sach thanh vien"})
+	})
 
-	log.Println("Server is starting ...")
-	err := http.ListenAndServe(":8080", nil) // localhost:8080
-	if err != nil {
-		log.Fatal("Server error: ", err)
-	}
-}
+	r.GET("/user/:user_id", func(ctx *gin.Context) {
+		userId := ctx.Param("user_id")
 
-func demoHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("%+v", r)
+		ctx.JSON(200, gin.H{
+			"data":    "Thong tin user",
+			"user_id": userId,
+		})
+	})
 
-	if r.Method != http.MethodGet {
-		http.Error(w, "Phuong thuc nay khong duoc ho tro", http.StatusMethodNotAllowed)
-		return
-	}
+	r.GET("/products", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"data": "Danh sach san pham"})
+	})
 
-	response := map[string]string{
-		"message": "Chao mung cac ban den voi khoa hoc lap trinh Golang",
-	}
+	r.GET("/product/detail/:product_name", func(ctx *gin.Context) {
+		productName := ctx.Param("product_name")
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("X-Course", "Lap trinh Golang")
+		price := ctx.Query("price")
+		color := ctx.Query("color")
 
-	// data, err := json.Marshal(response)
-	// if err != nil {
-	// 	http.Error(w, "Loi ma hoa JSON", http.StatusInternalServerError)
-	// 	return
-	// }
-	// w.Write(data)
+		ctx.JSON(200, gin.H{
+			"data":          "Thong tin san pham",
+			"product_name":  productName,
+			"product_price": price,
+			"color":         color,
+		})
+	})
 
-	err := json.NewEncoder(w).Encode(response)
+	err := r.Run(":8080")
 	if err != nil {
 		return
 	}
