@@ -1,21 +1,46 @@
 package main
 
 import (
-  "fmt"
+	"encoding/json"
+	"log"
+	"net/http"
 )
 
-//TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
-
 func main() {
-  //TIP <p>Press <shortcut actionId="ShowIntentionActions"/> when your caret is at the underlined text
-  // to see how GoLand suggests fixing the warning.</p><p>Alternatively, if available, click the lightbulb to view possible fixes.</p>
-  s := "gopher"
-  fmt.Printf("Hello and welcome, %s!\n", s)
 
-  for i := 1; i <= 5; i++ {
-	//TIP <p>To start your debugging session, right-click your code in the editor and select the Debug option.</p> <p>We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-	// for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.</p>
-	fmt.Println("i =", 100/i)
-  }
+	http.HandleFunc("/demo", demoHandler)
+
+	log.Println("Server is starting ...")
+	err := http.ListenAndServe(":8080", nil) // localhost:8080
+	if err != nil {
+		log.Fatal("Server error: ", err)
+	}
+}
+
+func demoHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("%+v", r)
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Phuong thuc nay khong duoc ho tro", http.StatusMethodNotAllowed)
+		return
+	}
+
+	response := map[string]string{
+		"message": "Chao mung cac ban den voi khoa hoc lap trinh Golang",
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Course", "Lap trinh Golang")
+
+	// data, err := json.Marshal(response)
+	// if err != nil {
+	// 	http.Error(w, "Loi ma hoa JSON", http.StatusInternalServerError)
+	// 	return
+	// }
+	// w.Write(data)
+
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		return
+	}
 }
