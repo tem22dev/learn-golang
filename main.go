@@ -16,6 +16,7 @@ func main() {
 			userHandlerV1 := handler.NewUserHandler()
 			user.GET("/", userHandlerV1.GetUsersV1)
 			user.GET("/:id", userHandlerV1.GetUsersByIdV1)
+			user.GET("/admin/:uuid", userHandlerV1.GetUsersByUuidV1)
 			user.POST("/", userHandlerV1.PostUsersV1)
 			user.PUT("/:id", userHandlerV1.PutUsersV1)
 			user.DELETE("/:id", userHandlerV1.DeleteUsersV1)
@@ -25,10 +26,18 @@ func main() {
 		{
 			productHandlerV1 := handler.NewProductHandler()
 			product.GET("/", productHandlerV1.GetProductsV1)
-			product.GET("/:id", productHandlerV1.GetProductsByIdV1)
+			product.GET("/:slug", productHandlerV1.GetProductsBySlugV1)
+			//product.GET("/:id", productHandlerV1.GetProductsByIdV1)
 			product.POST("/", productHandlerV1.PostProductsV1)
 			product.PUT("/:id", productHandlerV1.PutProductsV1)
 			product.DELETE("/:id", productHandlerV1.DeleteProductsV1)
+
+		}
+
+		categories := v1.Group("/categories")
+		{
+			categoryHandlerV1 := handler.NewCategoryHandler()
+			categories.GET("/:category", categoryHandlerV1.GetProductsByCategoryV1)
 
 		}
 	}
