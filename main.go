@@ -1,47 +1,39 @@
 package main
 
 import (
+	"learn-golang/internal/api/v1/handler"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	r := gin.Default()
-	r.GET("/demo", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{"message": "Hello, Trung Em"})
-	})
+	router := gin.Default()
 
-	r.GET("/users/:user_id", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{"data": "Danh sach thanh vien"})
-	})
+	v1 := router.Group("/api/v1")
+	{
+		user := v1.Group("/users")
+		{
+			userHandlerV1 := handler.NewUserHandler()
+			user.GET("/", userHandlerV1.GetUsersV1)
+			user.GET("/:id", userHandlerV1.GetUsersByIdV1)
+			user.POST("/", userHandlerV1.PostUsersV1)
+			user.PUT("/:id", userHandlerV1.PutUsersV1)
+			user.DELETE("/:id", userHandlerV1.DeleteUsersV1)
+		}
 
-	r.GET("/user/:user_id", func(ctx *gin.Context) {
-		userId := ctx.Param("user_id")
+		product := v1.Group("/products")
+		{
+			productHandlerV1 := handler.NewProductHandler()
+			product.GET("/", productHandlerV1.GetProductsV1)
+			product.GET("/:id", productHandlerV1.GetProductsByIdV1)
+			product.POST("/", productHandlerV1.PostProductsV1)
+			product.PUT("/:id", productHandlerV1.PutProductsV1)
+			product.DELETE("/:id", productHandlerV1.DeleteProductsV1)
 
-		ctx.JSON(200, gin.H{
-			"data":    "Thong tin user",
-			"user_id": userId,
-		})
-	})
+		}
+	}
 
-	r.GET("/products", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{"data": "Danh sach san pham"})
-	})
-
-	r.GET("/product/detail/:product_name", func(ctx *gin.Context) {
-		productName := ctx.Param("product_name")
-
-		price := ctx.Query("price")
-		color := ctx.Query("color")
-
-		ctx.JSON(200, gin.H{
-			"data":          "Thong tin san pham",
-			"product_name":  productName,
-			"product_price": price,
-			"color":         color,
-		})
-	})
-
-	err := r.Run(":8080")
+	err := router.Run(":8080")
 	if err != nil {
 		return
 	}
