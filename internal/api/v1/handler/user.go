@@ -1,11 +1,10 @@
 package handler
 
 import (
+	"learn-golang/utils"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type UserHandler struct{}
@@ -20,14 +19,11 @@ func (u UserHandler) GetUsersV1(ctx *gin.Context) {
 
 func (u UserHandler) GetUsersByIdV1(ctx *gin.Context) {
 	idStr := ctx.Param("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"error": "id must be integer"})
-		return
-	}
 
-	if id < 0 {
-		ctx.JSON(http.StatusBadGateway, gin.H{"error": "id must be >= 0"})
+	id, err := utils.ValidationPositiveInt("ID", idStr)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -36,15 +32,15 @@ func (u UserHandler) GetUsersByIdV1(ctx *gin.Context) {
 
 func (u UserHandler) GetUsersByUuidV1(ctx *gin.Context) {
 	idStr := ctx.Param("uuid")
-	_, err := uuid.Parse(idStr)
+	uid, err := utils.ValidationUuid("UUID", idStr)
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"error": "id must be a valid uuid"})
+		ctx.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
 		return
 	}
 
 	ctx.JSON(200, gin.H{
 		"message": "Get user by uuid (V1)",
-		"uuid":    idStr,
+		"uuid":    uid,
 	})
 }
 

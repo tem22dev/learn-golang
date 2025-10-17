@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"learn-golang/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,10 +21,10 @@ func NewCategoryHandler() *CategoryHandler {
 
 func (c CategoryHandler) GetProductsByCategoryV1(ctx *gin.Context) {
 	category := ctx.Param("category")
-
-	if !validCategory[category] {
-		ctx.JSON(http.StatusBadGateway, gin.H{"error": "invalid category"})
+	if err := utils.ValidationIntList("Category", category, validCategory); err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
 		return
 	}
+
 	ctx.JSON(200, gin.H{"message": "Get product by category (V1)", "data": category})
 }

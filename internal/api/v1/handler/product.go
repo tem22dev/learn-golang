@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"learn-golang/utils"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -10,8 +11,10 @@ import (
 
 type ProductHandler struct{}
 
-var slugRegex = regexp.MustCompile(`^[a-z0-9]+(?:[-.][a-z0-9]+)*$`)
-var searchRegex = regexp.MustCompile(`^[a-zA-Z0-9\s]+$`)
+var (
+	slugRegex   = regexp.MustCompile(`^[a-z0-9]+(?:[-.][a-z0-9]+)*$`)
+	searchRegex = regexp.MustCompile(`^[a-zA-Z0-9\s]+$`)
+)
 
 func NewProductHandler() *ProductHandler {
 	return &ProductHandler{}
@@ -19,18 +22,19 @@ func NewProductHandler() *ProductHandler {
 
 func (u ProductHandler) GetProductsV1(ctx *gin.Context) {
 	search := ctx.Query("search")
-	if search == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "query parameter search required"})
+
+	if err := utils.ValidationRequired("Search", search); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if len(search) < 3 || len(search) > 50 {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "query parameter search too long"})
+	if err := utils.ValidationStringLength("Search", search, 3, 50); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if !searchRegex.MatchString(search) {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "query parameter search invalid"})
+	if err := utils.ValidationRegex("Search", search, searchRegex); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -54,8 +58,8 @@ func (u ProductHandler) GetProductsByIdV1(ctx *gin.Context) {
 
 func (u ProductHandler) GetProductsBySlugV1(ctx *gin.Context) {
 	slug := ctx.Param("slug")
-	if !slugRegex.MatchString(slug) {
-		ctx.JSON(http.StatusBadGateway, gin.H{"error": "slug is not valid"})
+	if err := utils.ValidationRegex("Slug", slug, slugRegex); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.JSON(200, gin.H{"message": "Get product by slug (V1)"})
