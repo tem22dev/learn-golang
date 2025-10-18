@@ -5,75 +5,12 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 )
-
-func ValidationRequired(fieldName, value string) error {
-	if value == "" {
-		return fmt.Errorf("%s is required", fieldName)
-	}
-	return nil
-}
-
-func ValidationStringLength(fieldName, value string, min, max int) error {
-	l := len(value)
-	if l < min || l > max {
-		return fmt.Errorf("%s must be between %d and %d characters", fieldName, min, max)
-	}
-
-	return nil
-}
-
-func ValidationRegex(fieldName, value string, re *regexp.Regexp) error {
-	if !re.MatchString(value) {
-		return fmt.Errorf("%s must match %s", fieldName, re)
-	}
-
-	return nil
-}
-
-func ValidationPositiveInt(fieldName, value string) (int, error) {
-	v, err := strconv.Atoi(value)
-	if err != nil {
-		return 0, fmt.Errorf("%s must be a number", fieldName)
-	}
-
-	if v < 0 {
-
-		return 0, fmt.Errorf("%s must be positive", fieldName)
-	}
-
-	return v, nil
-}
-
-func ValidationUuid(fieldName, value string) (*uuid.UUID, error) {
-	uid, err := uuid.Parse(value)
-	if err != nil {
-		return &uid, fmt.Errorf("%s must be a valid Uuid", fieldName)
-	}
-
-	return &uid, nil
-}
-
-func ValidationIntList(fieldName, value string, allowed map[string]bool) error {
-	if !allowed[value] {
-		return fmt.Errorf("%s must be one of: %v", fieldName, keys(allowed))
-	}
-
-	return nil
-}
-
-func keys(m map[string]bool) []string {
-	var k []string
-	for key := range m {
-		k = append(k, key)
-	}
-	return k
-}
 
 func HandleValidationErrors(err error) gin.H {
 	var validationError validator.ValidationErrors
@@ -84,10 +21,28 @@ func HandleValidationErrors(err error) gin.H {
 			log.Printf("%+v", e.Tag())
 			switch e.Tag() {
 			case "gt":
-				errs[e.Field()] = e.Field() + " phai lon hon gia tri toi thieu"
+				errs[e.Field()] = e.Field() + " phải lớn hơn giá trị tối thiểu"
+			case "lt":
+				errs[e.Field()] = e.Field() + " phải nhỏ hơn giá trị tối thiểu"
+			case "gte":
+				errs[e.Field()] = e.Field() + " phải lớn hơn hoặc bằng giá trị tối thiểu"
+			case "lte":
+				errs[e.Field()] = e.Field() + " phải nhỏ hơn hoặc bằng giá trị tối thiểu"
 			case "uuid":
-
 				errs[e.Field()] = e.Field() + " khong dung dinh dang"
+			case "slug":
+				errs[e.Field()] = e.Field() + " chứa chữ thường, số hoặc dấu gạch ngang"
+			case "min":
+				errs[e.Field()] = fmt.Sprintf("%s phải lớn hơn %s ký tự", e.Field(), e.Param())
+			case "max":
+				errs[e.Field()] = fmt.Sprintf("%s phải nhỏ hơn %s ký tự", e.Field(), e.Param())
+			case "oneof":
+				allowedValues := strings.Join(strings.Split(e.Param(), " "), ", ")
+				errs[e.Field()] = fmt.Sprintf("%s phải là một trong các giá trị: %s", e.Field(), allowedValues)
+			case "required":
+				errs[e.Field()] = e.Field() + " là bắt buộc"
+			case "search":
+				errs[e.Field()] = e.Field() + " chỉ được chứa chữ thường, in hoa, số và khoảng trắng"
 			}
 
 		}
@@ -95,4 +50,29 @@ func HandleValidationErrors(err error) gin.H {
 	}
 
 	return gin.H{"error": "Yeu cau khong hop le " + err.Error()}
+}
+
+func RegisterValidators() error {
+	v, ok := binding.Validator.Engine().(*validator.Validate)
+	if !ok {
+		return fmt.Errorf("Failed to get validator engine")
+	}
+
+	var slugRegex = regexp.MustCompile(`^[a-z0-9]+(?:[-.][a-z0-9]+)*$`)
+	err := v.RegisterValidation("slug", func(fl validator.FieldLevel) bool {
+		return slugRegex.MatchString(fl.Field().String())
+	})
+	if err != nil {
+		return err
+	}
+
+	var searchRegex = regexp.MustCompile(`^[a-zA-Z0-9\s]+$`)
+	errSearchRegex := v.RegisterValidation("search", func(fl validator.FieldLevel) bool {
+		return searchRegex.MatchString(fl.Field().String())
+	})
+	if errSearchRegex != nil {
+		return errSearchRegex
+	}
+
+	return nil
 }

@@ -3,52 +3,40 @@ package handler
 import (
 	"learn-golang/utils"
 	"net/http"
-	"regexp"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type ProductHandler struct{}
 
-var (
-	slugRegex   = regexp.MustCompile(`^[a-z0-9]+(?:[-.][a-z0-9]+)*$`)
-	searchRegex = regexp.MustCompile(`^[a-zA-Z0-9\s]+$`)
-)
+type GetProductsBySlugV1Param struct {
+	Slug string `uri:"slug" binding:"slug,min=5,max=50"`
+}
+
+type GetProductsV1Param struct {
+	Search string `form:"search" binding:"required,min=3,max=50,search"`
+	Limit  int    `form:"limit" binding:"omitempty,gte=1,lte=100"`
+}
 
 func NewProductHandler() *ProductHandler {
 	return &ProductHandler{}
 }
 
 func (u ProductHandler) GetProductsV1(ctx *gin.Context) {
-	search := ctx.Query("search")
-
-	if err := utils.ValidationRequired("Search", search); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var param GetProductsV1Param
+	if err := ctx.ShouldBindQuery(&param); err != nil {
+		ctx.JSON(http.StatusBadRequest, utils.HandleValidationErrors(err))
 		return
 	}
 
-	if err := utils.ValidationStringLength("Search", search, 3, 50); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := utils.ValidationRegex("Search", search, searchRegex); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	limitStr := ctx.DefaultQuery("limit", "10")
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "query parameter limit invalid"})
-		return
+	if param.Limit == 0 {
+		param.Limit = 10
 	}
 
 	ctx.JSON(200, gin.H{
 		"message": "List all products (V1)",
-		"search":  search,
-		"limit":   limit,
+		"search":  param.Search,
+		"limit":   param.Limit,
 	})
 }
 
@@ -57,12 +45,15 @@ func (u ProductHandler) GetProductsByIdV1(ctx *gin.Context) {
 }
 
 func (u ProductHandler) GetProductsBySlugV1(ctx *gin.Context) {
-	slug := ctx.Param("slug")
-	if err := utils.ValidationRegex("Slug", slug, slugRegex); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var param GetProductsBySlugV1Param
+	if err := ctx.ShouldBindUri(&param); err != nil {
+		ctx.JSON(http.StatusBadRequest, utils.HandleValidationErrors(err))
 		return
 	}
-	ctx.JSON(200, gin.H{"message": "Get product by slug (V1)"})
+	ctx.JSON(200, gin.H{
+		"message": "Get product by slug (V1)",
+		"slug":    param.Slug,
+	})
 }
 
 func (u ProductHandler) PostProductsV1(ctx *gin.Context) {

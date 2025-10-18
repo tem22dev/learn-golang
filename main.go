@@ -2,12 +2,17 @@ package main
 
 import (
 	"learn-golang/internal/api/v1/handler"
+	"learn-golang/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
+
+	if err := utils.RegisterValidators(); err != nil {
+		panic(err)
+	}
 
 	v1 := router.Group("/api/v1")
 	{

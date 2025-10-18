@@ -9,10 +9,8 @@ import (
 
 type CategoryHandler struct{}
 
-var validCategory = map[string]bool{
-	"php":    true,
-	"python": true,
-	"golang": true,
+type GetProductsByCategoryV1Param struct {
+	Category string `uri:"category" binding:"oneof=php python golang"`
 }
 
 func NewCategoryHandler() *CategoryHandler {
@@ -20,11 +18,14 @@ func NewCategoryHandler() *CategoryHandler {
 }
 
 func (c CategoryHandler) GetProductsByCategoryV1(ctx *gin.Context) {
-	category := ctx.Param("category")
-	if err := utils.ValidationIntList("Category", category, validCategory); err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+	var param GetProductsByCategoryV1Param
+	if err := ctx.ShouldBindUri(&param); err != nil {
+		ctx.JSON(http.StatusBadRequest, utils.HandleValidationErrors(err))
 		return
 	}
 
-	ctx.JSON(200, gin.H{"message": "Get product by category (V1)", "data": category})
+	ctx.JSON(200, gin.H{
+		"message": "Get product by category (V1)",
+		"data":    param.Category,
+	})
 }
