@@ -1,10 +1,14 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"regexp"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
@@ -69,4 +73,26 @@ func keys(m map[string]bool) []string {
 		k = append(k, key)
 	}
 	return k
+}
+
+func HandleValidationErrors(err error) gin.H {
+	var validationError validator.ValidationErrors
+	if errors.As(err, &validationError) {
+		errs := make(map[string]string)
+
+		for _, e := range validationError {
+			log.Printf("%+v", e.Tag())
+			switch e.Tag() {
+			case "gt":
+				errs[e.Field()] = e.Field() + " phai lon hon gia tri toi thieu"
+			case "uuid":
+
+				errs[e.Field()] = e.Field() + " khong dung dinh dang"
+			}
+
+		}
+		return gin.H{"error": errs}
+	}
+
+	return gin.H{"error": "Yeu cau khong hop le " + err.Error()}
 }
