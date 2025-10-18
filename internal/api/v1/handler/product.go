@@ -18,6 +18,18 @@ type GetProductsV1Param struct {
 	Limit  int    `form:"limit" binding:"omitempty,gte=1,lte=100"`
 }
 
+type ProductImage struct {
+	ImageName string `json:"image_name" binding:"required"`
+	ImageLink string `json:"image_link" binding:"required"`
+}
+
+type PostProductsV1Param struct {
+	Name         string       `json:"name" binding:"required,min=3,max=100"`
+	Price        int          `json:"price" binding:"required,min=100000"`
+	Display      bool         `json:"display" binding:"omitempty"`
+	ProductImage ProductImage `json:"product_image" binding:"required"`
+}
+
 func NewProductHandler() *ProductHandler {
 	return &ProductHandler{}
 }
@@ -57,7 +69,18 @@ func (u ProductHandler) GetProductsBySlugV1(ctx *gin.Context) {
 }
 
 func (u ProductHandler) PostProductsV1(ctx *gin.Context) {
-	ctx.JSON(200, gin.H{"message": "Create product (V1)"})
+	var param PostProductsV1Param
+	if err := ctx.ShouldBindJSON(&param); err != nil {
+		ctx.JSON(http.StatusBadRequest, utils.HandleValidationErrors(err))
+		return
+	}
+	ctx.JSON(200, gin.H{
+		"message":       "Create product (V1)",
+		"name":          param.Name,
+		"price":         param.Price,
+		"display":       param.Display,
+		"product_image": param.ProductImage,
+	})
 }
 
 func (u ProductHandler) PutProductsV1(ctx *gin.Context) {

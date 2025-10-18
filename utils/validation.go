@@ -33,9 +33,9 @@ func HandleValidationErrors(err error) gin.H {
 			case "slug":
 				errs[e.Field()] = e.Field() + " chứa chữ thường, số hoặc dấu gạch ngang"
 			case "min":
-				errs[e.Field()] = fmt.Sprintf("%s phải lớn hơn %s ký tự", e.Field(), e.Param())
+				errs[e.Field()] = fmt.Sprintf("%s phải lớn hơn %s", e.Field(), e.Param())
 			case "max":
-				errs[e.Field()] = fmt.Sprintf("%s phải nhỏ hơn %s ký tự", e.Field(), e.Param())
+				errs[e.Field()] = fmt.Sprintf("%s phải nhỏ hơn %s", e.Field(), e.Param())
 			case "oneof":
 				allowedValues := strings.Join(strings.Split(e.Param(), " "), ", ")
 				errs[e.Field()] = fmt.Sprintf("%s phải là một trong các giá trị: %s", e.Field(), allowedValues)
