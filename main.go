@@ -43,6 +43,16 @@ func main() {
 		{
 			categoryHandlerV1 := handler.NewCategoryHandler()
 			categories.GET("/:category", categoryHandlerV1.GetProductsByCategoryV1)
+			categories.POST("/", categoryHandlerV1.PostCategoryV1)
+
+		}
+
+		news := v1.Group("/news")
+		{
+			newsHandlerV1 := handler.NewNewsHandler()
+			//news.GET("/", newsHandlerV1.GetNewsV1)
+			//news.GET("/:slug", newsHandlerV1.GetNewsBySlugV1)
+			news.POST("/", newsHandlerV1.PostNewsV1)
 
 		}
 	}
