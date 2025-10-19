@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -33,9 +35,13 @@ func HandleValidationErrors(err error) gin.H {
 			case "slug":
 				errs[e.Field()] = e.Field() + " chứa chữ thường, số hoặc dấu gạch ngang"
 			case "min":
-				errs[e.Field()] = fmt.Sprintf("%s phải lớn hơn %s", e.Field(), e.Param())
+				errs[e.Field()] = fmt.Sprintf("%s phải lớn hơn %s ký tự", e.Field(), e.Param())
 			case "max":
-				errs[e.Field()] = fmt.Sprintf("%s phải nhỏ hơn %s", e.Field(), e.Param())
+				errs[e.Field()] = fmt.Sprintf("%s phải nhỏ hơn %s ký tự", e.Field(), e.Param())
+			case "min_int":
+				errs[e.Field()] = fmt.Sprintf("%s phải có giá trị lớn hơn %s", e.Field(), e.Param())
+			case "max_int":
+				errs[e.Field()] = fmt.Sprintf("%s phải có giá trị nhỏ hơn %s", e.Field(), e.Param())
 			case "oneof":
 				allowedValues := strings.Join(strings.Split(e.Param(), " "), ", ")
 				errs[e.Field()] = fmt.Sprintf("%s phải là một trong các giá trị: %s", e.Field(), allowedValues)
@@ -43,6 +49,9 @@ func HandleValidationErrors(err error) gin.H {
 				errs[e.Field()] = e.Field() + " là bắt buộc"
 			case "search":
 				errs[e.Field()] = e.Field() + " chỉ được chứa chữ thường, in hoa, số và khoảng trắng"
+			case "file_ext":
+				allowedValues := strings.Join(strings.Split(e.Param(), " "), ", ")
+				errs[e.Field()] = fmt.Sprintf("%s chỉ cho phép những file có extension: %s", e.Field(), allowedValues)
 			}
 
 		}
@@ -72,6 +81,54 @@ func RegisterValidators() error {
 	})
 	if errSearchRegex != nil {
 		return errSearchRegex
+	}
+
+	errMinInt := v.RegisterValidation("min_int", func(fl validator.FieldLevel) bool {
+		minStr := fl.Param()
+		minVal, err := strconv.ParseInt(minStr, 10, 64)
+		if err != nil {
+			return false
+		}
+
+		return fl.Field().Int() >= minVal
+	})
+	if errMinInt != nil {
+		return errMinInt
+	}
+
+	errMaxInt := v.RegisterValidation("max_int", func(fl validator.FieldLevel) bool {
+		maxStr := fl.Param()
+		maxVal, err := strconv.ParseInt(maxStr, 10, 64)
+		if err != nil {
+			return false
+		}
+
+		return fl.Field().Int() >= maxVal
+	})
+	if errMaxInt != nil {
+		return errMaxInt
+	}
+
+	errFileExt := v.RegisterValidation("file_ext", func(fl validator.FieldLevel) bool {
+		filename := fl.Field().String()
+		allowedStr := fl.Param()
+		if allowedStr == "" {
+			return false
+		}
+		allowedExt := strings.Fields(allowedStr)
+		ext := strings.TrimPrefix(strings.ToLower(filepath.Ext(filename)), ".")
+
+		for _, allowed := range allowedExt {
+			if ext == strings.ToLower(allowed) {
+				return true
+			}
+		}
+
+		return false
+
+	})
+	if errFileExt != nil {
+		return errFileExt
 	}
 
 	return nil
