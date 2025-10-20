@@ -2,6 +2,7 @@ package main
 
 import (
 	"learn-golang/internal/api/v1/handler"
+	"learn-golang/middleware"
 	"learn-golang/utils"
 
 	"github.com/gin-gonic/gin"
@@ -42,7 +43,7 @@ func main() {
 		categories := v1.Group("/categories")
 		{
 			categoryHandlerV1 := handler.NewCategoryHandler()
-			categories.GET("/:category", categoryHandlerV1.GetProductsByCategoryV1)
+			categories.GET("/:category", middleware.SimpleMiddleware(), categoryHandlerV1.GetProductsByCategoryV1)
 			categories.POST("/", categoryHandlerV1.PostCategoryV1)
 
 		}
