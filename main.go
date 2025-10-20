@@ -53,6 +53,7 @@ func main() {
 			//news.GET("/", newsHandlerV1.GetNewsV1)
 			//news.GET("/:slug", newsHandlerV1.GetNewsBySlugV1)
 			news.POST("/", newsHandlerV1.PostNewsV1)
+			news.POST("/upload-file", newsHandlerV1.PostUploadFileNewsV1)
 
 		}
 	}
