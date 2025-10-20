@@ -59,6 +59,8 @@ func main() {
 		}
 	}
 
+	router.StaticFS("/images", gin.Dir("./uploads", false))
+
 	err := router.Run(":8080")
 	if err != nil {
 		return
