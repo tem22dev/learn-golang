@@ -4,12 +4,20 @@ import (
 	"learn-golang/internal/api/v1/handler"
 	"learn-golang/middleware"
 	"learn-golang/utils"
+	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lpernett/godotenv"
 )
 
 func main() {
 	router := gin.Default()
+
+	if err := godotenv.Load(); err != nil {
+		log.Println("No load file .env")
+	}
+
+	router.Use(middleware.ApiKeyMiddleware())
 
 	if err := utils.RegisterValidators(); err != nil {
 		panic(err)
