@@ -19,7 +19,11 @@ func main() {
 		log.Println("No load file .env")
 	}
 
-	router.Use(middleware.ApiKeyMiddleware(), middleware.RateLimitingMiddleware())
+	router.Use(
+		middleware.LoggerMiddleware(),
+		middleware.ApiKeyMiddleware(),
+		middleware.RateLimitingMiddleware(),
+	)
 
 	if err := utils.RegisterValidators(); err != nil {
 		panic(err)

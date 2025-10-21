@@ -1,0 +1,136 @@
+{
+  "level": "info",
+  "method": "GET",
+  "path": "/api/v1/categories/php",
+  "ip": "::1",
+  "query": "",
+  "user_agent": "PostmanRuntime/7.49.0",
+  "referer": "",
+  "proto": "HTTP/1.1",
+  "host": "localhost:8080",
+  "remote_addr": "::1",
+  "request_uri": "/api/v1/categories/php",
+  "content_length": 20,
+  "headers": {
+    "Accept": [
+      "*/*"
+    ],
+    "Accept-Encoding": [
+      "gzip, deflate, br"
+    ],
+    "Connection": [
+      "keep-alive"
+    ],
+    "Content-Length": [
+      "20"
+    ],
+    "Content-Type": [
+      "application/x-www-form-urlencoded"
+    ],
+    "Postman-Token": [
+      "a6b27e34-baa3-4b2e-b346-e3a29e3c4828"
+    ],
+    "User-Agent": [
+      "PostmanRuntime/7.49.0"
+    ],
+    "X-Api-Key": [
+      "9585e448-1c9c-4fb8-a14c-cb4aaa853d4c"
+    ]
+  },
+  "status": 200,
+  "duration_ms": 4,
+  "time": "2025-10-21T11:26:17+07:00",
+  "message": "HTTP request log"
+}
+{
+  "level": "info",
+  "method": "GET",
+  "path": "/api/v1/categories/php",
+  "ip": "::1",
+  "query": "",
+  "user_agent": "PostmanRuntime/7.49.0",
+  "referer": "",
+  "proto": "HTTP/1.1",
+  "host": "localhost:8080",
+  "remote_addr": "::1",
+  "request_uri": "/api/v1/categories/php",
+  "content_length": 20,
+  "headers": {
+    "Accept": [
+      "*/*"
+    ],
+    "Accept-Encoding": [
+      "gzip, deflate, br"
+    ],
+    "Connection": [
+      "keep-alive"
+    ],
+    "Content-Length": [
+      "20"
+    ],
+    "Content-Type": [
+      "application/x-www-form-urlencoded"
+    ],
+    "Postman-Token": [
+      "5ea61636-8f46-4c42-baf8-0a7322bb2c0d"
+    ],
+    "User-Agent": [
+      "PostmanRuntime/7.49.0"
+    ],
+    "X-Api-Key": [
+      "9585e448-1c9c-4fb8-a14c-cb4aaa853d4c"
+    ]
+  },
+  "status": 200,
+  "duration_ms": 2,
+  "time": "2025-10-21T11:50:13+07:00",
+  "message": "HTTP request log"
+}
+{
+  "level": "info",
+  "method": "GET",
+  "path": "/api/v1/categories/php",
+  "ip": "::1",
+  "query": "",
+  "user_agent": "PostmanRuntime/7.49.0",
+  "referer": "",
+  "proto": "HTTP/1.1",
+  "host": "localhost:8080",
+  "remote_addr": "::1",
+  "request_uri": "/api/v1/categories/php",
+  "content_length": 20,
+  "headers": {
+    "Accept": [
+      "*/*"
+    ],
+    "Accept-Encoding": [
+      "gzip, deflate, br"
+    ],
+    "Connection": [
+      "keep-alive"
+    ],
+    "Content-Length": [
+      "20"
+    ],
+    "Content-Type": [
+      "application/x-www-form-urlencoded"
+    ],
+    "Postman-Token": [
+      "769949d8-319d-45ef-a62c-c2f18cc1dbb4"
+    ],
+    "User-Agent": [
+      "PostmanRuntime/7.49.0"
+    ],
+    "X-Api-Key": [
+      "9585e448-1c9c-4fb8-a14c-cb4aaa853d4c"
+    ]
+  },
+  "status": 200,
+  "duration_ms": 2,
+  "time": "2025-10-21T11:52:21+07:00",
+  "message": "HTTP request log"
+}
+{"level":"error","method":"GET","path":"/api/v1/categories/php","ip":"::1","query":"","user_agent":"PostmanRuntime/7.49.0","referer":"","proto":"HTTP/1.1","host":"localhost:8080","remote_addr":"::1","request_uri":"/api/v1/categories/php","content_length":20,"headers":{"Accept":["*/*"],"Accept-Encoding":["gzip, deflate, br"],"Connection":["keep-alive"],"Content-Length":["20"],"Content-Type":["application/x-www-form-urlencoded"],"Postman-Token":["c32c62af-9bd1-434d-86bf-5ec6f3d5cc57"],"User-Agent":["PostmanRuntime/7.49.0"]},"status":502,"duration_ms":0,"time":"2025-10-21T12:04:13+07:00","message":"HTTP request log"}
+{"level":"info","method":"GET","path":"/api/v1/categories/php","ip":"::1","query":"","user_agent":"PostmanRuntime/7.49.0","referer":"","proto":"HTTP/1.1","host":"localhost:8080","remote_addr":"::1","request_uri":"/api/v1/categories/php","content_length":20,"headers":{"Accept":["*/*"],"Accept-Encoding":["gzip, deflate, br"],"Connection":["keep-alive"],"Content-Length":["20"],"Content-Type":["application/x-www-form-urlencoded"],"Postman-Token":["72827e51-349b-4a76-9fec-ceccc5a9757e"],"User-Agent":["PostmanRuntime/7.49.0"],"X-Api-Key":["9585e448-1c9c-4fb8-a14c-cb4aaa853d4c"]},"status":200,"duration_ms":8,"time":"2025-10-21T12:05:50+07:00","message":"HTTP request log"}
+{"level":"error","method":"GET","path":"/api/v1/categories/php","ip":"::1","query":"","user_agent":"PostmanRuntime/7.49.0","referer":"","proto":"HTTP/1.1","host":"localhost:8080","remote_addr":"::1","request_uri":"/api/v1/categories/php","content_length":20,"headers":{"Accept":["*/*"],"Accept-Encoding":["gzip, deflate, br"],"Connection":["keep-alive"],"Content-Length":["20"],"Content-Type":["application/x-www-form-urlencoded"],"Postman-Token":["5b8f4cf8-c3eb-456b-9f74-f3195458e9af"],"User-Agent":["PostmanRuntime/7.49.0"]},"status":502,"duration_ms":0,"time":"2025-10-21T12:05:58+07:00","message":"HTTP request log"}
+{"level":"warn","method":"GET","path":"/api/v1/categories/php","ip":"::1","query":"","user_agent":"PostmanRuntime/7.49.0","referer":"","proto":"HTTP/1.1","host":"localhost:8080","remote_addr":"::1","request_uri":"/api/v1/categories/php","content_length":20,"headers":{"Accept":["*/*"],"Accept-Encoding":["gzip, deflate, br"],"Connection":["keep-alive"],"Content-Length":["20"],"Content-Type":["application/x-www-form-urlencoded"],"Postman-Token":["760e6f1d-7e43-48da-8a36-90c1c8590069"],"User-Agent":["PostmanRuntime/7.49.0"]},"status":400,"duration_ms":0,"time":"2025-10-21T12:07:12+07:00","message":"HTTP request log"}

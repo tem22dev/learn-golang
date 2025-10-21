@@ -71,6 +71,10 @@ func RateLimitingMiddleware() gin.HandlerFunc {
 				"error":   "Too many requests",
 				"message": "Rate limit exceeded",
 			})
+
+			return
 		}
+
+		ctx.Next()
 	}
 }
