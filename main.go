@@ -13,11 +13,13 @@ import (
 func main() {
 	router := gin.Default()
 
+	go middleware.CleanupClients()
+
 	if err := godotenv.Load(); err != nil {
 		log.Println("No load file .env")
 	}
 
-	router.Use(middleware.ApiKeyMiddleware())
+	router.Use(middleware.ApiKeyMiddleware(), middleware.RateLimitingMiddleware())
 
 	if err := utils.RegisterValidators(); err != nil {
 		panic(err)
