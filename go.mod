@@ -9,6 +9,7 @@ require (
 	github.com/lpernett/godotenv v0.0.0-20230527005122-0de1d4c5ef5e
 	github.com/rs/zerolog v1.34.0
 	golang.org/x/time v0.14.0
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
 require (
