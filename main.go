@@ -57,7 +57,7 @@ func main() {
 		categories := v1.Group("/categories")
 		{
 			categoryHandlerV1 := handler.NewCategoryHandler()
-			categories.GET("/:category", middleware.SimpleMiddleware(), categoryHandlerV1.GetProductsByCategoryV1)
+			categories.GET("/:category", categoryHandlerV1.GetProductsByCategoryV1)
 			categories.POST("/", categoryHandlerV1.PostCategoryV1)
 
 		}

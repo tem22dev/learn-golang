@@ -1,8 +1,15 @@
 package middleware
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"log"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +32,62 @@ func LoggerMiddleware() gin.HandlerFunc {
 
 	return func(ctx *gin.Context) {
 		start := time.Now()
+		contentType := ctx.GetHeader("Content-Type")
+		requestBody := make(map[string]any)
+		var formFiles []map[string]any
+
+		// multipart/form-data
+		if strings.HasPrefix(contentType, "multipart/form-data") {
+			if err := ctx.Request.ParseMultipartForm(32 << 20); err == nil && ctx.Request.MultipartForm != nil {
+				// for value
+				for key, values := range ctx.Request.MultipartForm.Value {
+					if len(values) == 1 {
+						requestBody[key] = values[0]
+					} else {
+						requestBody[key] = values
+					}
+				}
+
+				// for file
+				for field, files := range ctx.Request.MultipartForm.File {
+					for _, file := range files {
+						formFiles = append(formFiles, map[string]any{
+							"field":        field,
+							"filename":     file.Filename,
+							"size":         formatFileSize(file.Size),
+							"content_type": file.Header.Get("Content-Type"),
+						})
+					}
+				}
+
+				if len(formFiles) > 0 {
+					requestBody["form_files"] = formFiles
+				}
+			}
+			log.Println("multipart/form-data")
+		} else {
+			bodyRequest, err2 := io.ReadAll(ctx.Request.Body)
+			if err2 != nil {
+				logger.Error().Err(err2).Msg("Failed to read request body")
+			}
+
+			ctx.Request.Body = io.NopCloser(bytes.NewBuffer(bodyRequest))
+
+			// application/json
+			if strings.HasPrefix(contentType, "application/json") {
+				_ = json.Unmarshal(bodyRequest, &requestBody)
+			} else {
+				// application/x-www-form-urlencoded
+				values, _ := url.ParseQuery(string(bodyRequest))
+				for key, value := range values {
+					if len(value) > 0 {
+						requestBody[key] = value[0]
+					} else {
+						requestBody[key] = value
+					}
+				}
+			}
+		}
 
 		ctx.Next()
 
@@ -50,9 +113,21 @@ func LoggerMiddleware() gin.HandlerFunc {
 			Str("request_uri", ctx.Request.RequestURI).
 			Int64("content_length", ctx.Request.ContentLength).
 			Interface("headers", ctx.Request.Header).
+			Interface("request_body", requestBody).
 			Int("status", ctx.Writer.Status()).
 			Int64("duration_ms", duration.Milliseconds()).
 			Msg("HTTP request log")
 
+	}
+}
+
+func formatFileSize(size int64) string {
+	switch {
+	case size >= 1<<20:
+		return fmt.Sprintf("%.2f MB", float64(size)/(1<<20))
+	case size >= 1<<10:
+		return fmt.Sprintf("%.2f KB", float64(size)/(1<<10))
+	default:
+		return fmt.Sprintf("%d B", size)
 	}
 }

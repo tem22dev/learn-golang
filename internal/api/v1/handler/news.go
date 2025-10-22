@@ -51,7 +51,7 @@ func (n *NewsHandler) PostNewsV1(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, gin.H{
+	ctx.JSON(http.StatusCreated, gin.H{
 		"message": "Post news (V1)",
 		"title":   param.Title,
 		"status":  param.Status,
