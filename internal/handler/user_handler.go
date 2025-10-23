@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"learn-golang/internal/dto"
 	"learn-golang/internal/models"
 	"learn-golang/internal/service"
 	"learn-golang/internal/utils"
@@ -27,6 +28,7 @@ func (uh *UserHandler) CreateUser(ctx *gin.Context) {
 	var user models.User
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		ctx.JSON(http.StatusBadRequest, validation.HandleValidationErrors(err))
+		return
 	}
 
 	createUser, err := uh.service.CreateUser(user)
@@ -35,7 +37,9 @@ func (uh *UserHandler) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	utils.ResponseSuccess(ctx, http.StatusCreated, createUser)
+	userDTO := dto.MapUserToDTO(createUser)
+
+	utils.ResponseSuccess(ctx, http.StatusCreated, &userDTO)
 }
 
 func (uh *UserHandler) GetUserByUUID(ctx *gin.Context) {
