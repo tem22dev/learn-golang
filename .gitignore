@@ -1,3 +1,3 @@
 .idea
 
-./internal/logs/http.log
+internal/logs/
