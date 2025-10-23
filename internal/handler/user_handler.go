@@ -1,8 +1,11 @@
 package handler
 
 import (
+	"learn-golang/internal/models"
 	"learn-golang/internal/service"
-	"log"
+	"learn-golang/internal/utils"
+	"learn-golang/internal/validation"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,13 +21,21 @@ func NewUserHandler(service service.UserService) *UserHandler {
 }
 
 func (uh *UserHandler) GetAllUser(ctx *gin.Context) {
-	log.Println("Get All User in handler")
-
-	uh.service.GetAllUser()
 }
 
 func (uh *UserHandler) CreateUser(ctx *gin.Context) {
+	var user models.User
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+		ctx.JSON(http.StatusBadRequest, validation.HandleValidationErrors(err))
+	}
 
+	createUser, err := uh.service.CreateUser(user)
+	if err != nil {
+		utils.ResponseError(ctx, err)
+		return
+	}
+
+	utils.ResponseSuccess(ctx, http.StatusCreated, createUser)
 }
 
 func (uh *UserHandler) GetUserByUUID(ctx *gin.Context) {

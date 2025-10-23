@@ -24,7 +24,7 @@ func NewApplication(cfg *config.Config) *Application {
 	r := gin.Default()
 
 	if err := validation.InitValidator(); err != nil {
-		return nil
+		log.Fatalf("Validator init error: %v", err)
 	}
 
 	loadEnv()
