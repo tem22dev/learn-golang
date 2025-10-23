@@ -3,6 +3,7 @@ package app
 import (
 	"learn-golang/internal/config"
 	"learn-golang/internal/routes"
+	"learn-golang/internal/validation"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +22,10 @@ type Application struct {
 
 func NewApplication(cfg *config.Config) *Application {
 	r := gin.Default()
+
+	if err := validation.InitValidator(); err != nil {
+		return nil
+	}
 
 	loadEnv()
 

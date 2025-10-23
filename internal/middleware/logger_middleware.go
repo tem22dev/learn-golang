@@ -121,8 +121,6 @@ func LoggerMiddleware() gin.HandlerFunc {
 			responseBodyParsed = responseBodyRaw
 		}
 
-		log.Printf("%s", responseBodyRaw)
-
 		logEvent := logger.Info()
 		if statusCode >= 500 {
 			logEvent = logger.Error()
