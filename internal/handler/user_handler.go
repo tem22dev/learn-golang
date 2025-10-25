@@ -76,14 +76,14 @@ func (uh *UserHandler) CreateUser(ctx *gin.Context) {
 }
 
 func (uh *UserHandler) GetUserByUUID(ctx *gin.Context) {
-	var param GetUserByUuidParam
-	err := ctx.ShouldBindUri(&param)
+	var params GetUserByUuidParam
+	err := ctx.ShouldBindUri(&params)
 	if err != nil {
 		utils.ResponseValidator(ctx, validation.HandleValidationErrors(err))
 		return
 	}
 
-	user, err := uh.service.GetUserByUUID(param.Uuid)
+	user, err := uh.service.GetUserByUUID(params.Uuid)
 	if err != nil {
 		utils.ResponseError(ctx, err)
 		return
@@ -94,7 +94,27 @@ func (uh *UserHandler) GetUserByUUID(ctx *gin.Context) {
 }
 
 func (uh *UserHandler) UpdateUser(ctx *gin.Context) {
+	var params GetUserByUuidParam
+	if err := ctx.ShouldBindUri(&params); err != nil {
+		utils.ResponseValidator(ctx, validation.HandleValidationErrors(err))
+		return
+	}
 
+	var user models.User
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+		utils.ResponseError(ctx, err)
+		return
+	}
+
+	updatedUser, err := uh.service.UpdateUser(params.Uuid, user)
+	if err != nil {
+		utils.ResponseError(ctx, err)
+		return
+	}
+
+	userDTO := dto.MapUserToDTO(updatedUser)
+
+	utils.ResponseSuccess(ctx, http.StatusOK, &userDTO)
 }
 
 func (uh *UserHandler) DeleteUser(ctx *gin.Context) {

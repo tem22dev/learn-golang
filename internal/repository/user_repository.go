@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"learn-golang/internal/models"
 )
 
@@ -34,8 +35,15 @@ func (ur *InMemoryUserRepository) FindByUUID(uuid string) (models.User, bool) {
 	return models.User{}, false
 }
 
-func (ur *InMemoryUserRepository) Update() {
+func (ur *InMemoryUserRepository) Update(uuid string, currentUser models.User) error {
+	for i, user := range ur.users {
+		if user.UUID == uuid {
+			ur.users[i] = currentUser
+			return nil
+		}
+	}
 
+	return fmt.Errorf("user not found")
 }
 
 func (ur *InMemoryUserRepository) Delete() {
