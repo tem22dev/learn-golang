@@ -4,6 +4,7 @@ import (
 	"learn-golang/internal/models"
 	"learn-golang/internal/repository"
 	"learn-golang/internal/utils"
+	"strings"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -19,13 +20,38 @@ func NewUserService(repo repository.UserRepository) UserService {
 	}
 }
 
-func (us *userService) GetAllUser() ([]models.User, error) {
+func (us *userService) GetAllUser(search string, page, limit int) ([]models.User, error) {
 	users, err := us.repo.FindAll()
 	if err != nil {
 		return nil, utils.WrapError(err, "failed to fetch users", utils.ErrCodeInternal)
 	}
 
-	return users, nil
+	var filteredUsers []models.User
+	if search != "" {
+		search = strings.ToLower(search)
+		for _, user := range users {
+			name := strings.ToLower(user.Name)
+			email := strings.ToLower(user.Email)
+
+			if strings.Contains(name, search) || strings.Contains(email, search) {
+				filteredUsers = append(filteredUsers, user)
+			}
+		}
+	} else {
+		filteredUsers = users
+	}
+
+	start := (page - 1) * limit
+	if start >= len(filteredUsers) {
+		return []models.User{}, nil
+	}
+
+	end := start + limit
+	if end >= len(filteredUsers) {
+		end = len(filteredUsers)
+	}
+
+	return filteredUsers[start:end], nil
 }
 
 func (us *userService) CreateUser(user models.User) (models.User, error) {
